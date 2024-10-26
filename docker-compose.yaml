@@ -1,0 +1,12 @@
+services:
+  valorease-web-app-node:
+    build:
+      context: .
+      dockerfile: dockerfile.node
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/valorease-web-app
+    stdin_open: true
+    tty: true

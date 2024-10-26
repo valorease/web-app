@@ -1,0 +1,9 @@
+FROM node:latest
+
+COPY . /valorease-web-app
+
+WORKDIR /valorease-web-app
+
+RUN npm install
+
+CMD npm run dev
