@@ -32,7 +32,7 @@ export default function ExternalLayout({
       className={`flex flex-col justify-between min-h-screen w-screen ${className}`}
     >
       <header className="p-8 flex justify-between items-center">
-        <Link href="https://valorease.site" className="text-lg text-blue-950">
+        <Link href="https://valorease.site" className="text-lg">
           Valorease <strong>App</strong>
         </Link>
 
