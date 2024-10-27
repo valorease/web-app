@@ -40,7 +40,7 @@ export default function ExternalLayout({
           <NavigationMenuList className="gap-2 sm:gap-4 md:gap-8">
             {...menuLinks.map(([link, label]) => {
               return (
-                <NavigationMenuItem>
+                <NavigationMenuItem key={link + label}>
                   <Link href={link} legacyBehavior passHref>
                     <NavigationMenuLink
                       className={router.pathname == link ? "font-semibold" : ""}

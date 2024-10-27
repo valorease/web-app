@@ -1,3 +1,5 @@
+import ExternalLayout from "@/components/external-layout";
+
 import {
   Card,
   CardHeader,
@@ -12,10 +14,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { FormEvent } from "react";
-import Link from "next/link";
-import ExternalLayout from "@/components/external-layout";
 
-export default function LoginForm() {
+import Link from "next/link";
+
+export default function Page() {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
   };
