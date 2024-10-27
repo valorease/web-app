@@ -4,8 +4,10 @@ const nextConfig: NextConfig = {
   redirects: async () => [
     {
       source: "/",
-      destination: "https://valorease.site",
-      permanent: true,
+      // TODO:
+      // destination: "https://valorease.site",
+      destination: "/login",
+      permanent: false,
     },
   ],
 };
