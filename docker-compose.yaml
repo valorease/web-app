@@ -1,5 +1,6 @@
 services:
   valorease-web-app-node:
+    container_name: valorease-web-app-node
     build:
       context: .
       dockerfile: dockerfile.node
@@ -8,5 +9,6 @@ services:
       - 3000:3000
     volumes:
       - ./:/valorease-web-app
+      - ./.env.example:/valorease-web-app/.env
     stdin_open: true
     tty: true
