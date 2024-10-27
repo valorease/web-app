@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Consumer {
+  id        Int      @id @default(autoincrement())
+  publicId  String   @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String
+  email    String @unique
+  password String
+}
+
+model Plan {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(uuid())
+
+  name        String
+  description String
+  price       Float
+
+  PlanBenefits PlanBenefits[]
+}
+
+model PlanBenefits {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(uuid())
+
+  name        String
+  description String
+
+  plan   Plan @relation(fields: [planId], references: [id])
+  planId Int
+}
