@@ -16,6 +16,40 @@ model Consumer {
   name     String
   email    String @unique
   password String
+
+  plan   Plan @relation(fields: [planId], references: [id])
+  planId Int
+
+  Product Product[]
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  publicId  String   @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name       String
+  slug       String
+  target     String
+  lastSearch DateTime
+  average    Float
+
+  consumer   Consumer @relation(fields: [consumerId], references: [id])
+  consumerId Int
+
+  ProductHistory ProductHistory[]
+}
+
+model ProductHistory {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(uuid())
+
+  price Float
+  url   String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
 }
 
 model Plan {
@@ -26,7 +60,13 @@ model Plan {
   description String
   price       Float
 
+  productQuantityLimit          Int
+  viewHistoryLimitInMonths      Int
+  updateProductTimeWindowInDays Int
+  relatoryType                  Int
+
   PlanBenefits PlanBenefits[]
+  Consumer     Consumer[]
 }
 
 model PlanBenefits {
