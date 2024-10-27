@@ -46,16 +46,6 @@ export default function Page() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cellphone">Telefone</Label>
-                <Input
-                  id="cellphone"
-                  type="tel"
-                  placeholder="11 99200-2000"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
@@ -69,6 +59,16 @@ export default function Page() {
                 <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
+                  type="password"
+                  placeholder="******"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirme sua senha</Label>
+                <Input
+                  id="confirm-password"
                   type="password"
                   placeholder="******"
                   required
