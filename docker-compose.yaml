@@ -11,6 +11,5 @@ services:
       - ./:/valorease-web-app
       - ./node_modules:/valorease-web-app/node_modules
       - ./.next:/valorease-web-app/.next
-      - ./.env.example:/valorease-web-app/.env
     stdin_open: true
     tty: true
