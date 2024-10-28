@@ -5,7 +5,7 @@ export default function Page() {
   const session = useSession();
 
   return (
-    <RootLayout breadcrumb={[["/dashboard", "Início"]]}>
+    <RootLayout breadcrumb={[["/products", "Produtos"]]}>
       {session.data?.consumer.publicId}
     </RootLayout>
   );

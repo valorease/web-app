@@ -55,7 +55,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
-    "react-resizable-panels": "^2.1.5",
+    "react-resizable-panels": "^2.1.6",
     "recharts": "^2.13.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.4",
@@ -65,8 +65,8 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
-    "@types/next-auth": "^3.13.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/next-auth": "^3.13.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
