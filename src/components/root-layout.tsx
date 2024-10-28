@@ -198,7 +198,7 @@ export default function RootLayout({
                         <BreadcrumbSeparator />
                       </React.Fragment>
                     ) : (
-                      <BreadcrumbPage>{item}</BreadcrumbPage>
+                      <BreadcrumbPage key={index}>{item}</BreadcrumbPage>
                     )
                   )}
                 </BreadcrumbList>
