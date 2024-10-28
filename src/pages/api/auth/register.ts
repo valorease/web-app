@@ -53,6 +53,7 @@ export default async function handler(
 
     return response.status(201).json(consumerWithoutPassword);
   } catch (error) {
+    console.log(error);
     return response.status(500).json({ message: "Erro ao criar conta" });
   }
 }

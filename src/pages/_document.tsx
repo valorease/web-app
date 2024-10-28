@@ -23,7 +23,7 @@ export default function Document() {
         />
       </Head>
 
-      <body className="">
+      <body className="dark">
         <Main />
         <NextScript />
       </body>

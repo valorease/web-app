@@ -16,6 +16,8 @@ Clone o repositório em sua máquina:
 λ cd ./web-app
 ```
 
+Copie o conteúdo do arquivo `.env.example` o coloque em um arquivo chamado `.env`. Adicione os valores necessários.
+
 ## Rodando manualmente
 
 Tendo o Node instalado, você pode rodar o projeto com os comandos:
