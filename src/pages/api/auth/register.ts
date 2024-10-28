@@ -40,7 +40,7 @@ export default async function handler(
 
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
-    const user = await prisma.consumer.create({
+    const consumer = await prisma.consumer.create({
       data: {
         name: data.name,
         email: data.email,
@@ -49,9 +49,9 @@ export default async function handler(
       },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, ...consumerWithoutPassword } = consumer;
 
-    return response.status(201).json(userWithoutPassword);
+    return response.status(201).json(consumerWithoutPassword);
   } catch (error) {
     return response.status(500).json({ message: "Erro ao criar conta" });
   }

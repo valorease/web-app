@@ -142,7 +142,10 @@ export default function RootLayout({
                   <DropdownMenuTrigger asChild>
                     <SidebarMenuButton>
                       <CircleUserIcon />
-                      {session.data?.consumer.name}
+                      {session.data?.consumer.name
+                        .split(" ")
+                        .slice(0, 2)
+                        .join(" ")}
                       <ChevronUpIcon className="ml-auto" />
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>

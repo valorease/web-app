@@ -29,11 +29,12 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name       String
-  slug       String
-  target     String
-  lastSearch DateTime
-  average    Float
+  name        String
+  description String
+  slug        String
+  target      String
+  lastSearch  DateTime?
+  average     Float?
 
   consumer   Consumer @relation(fields: [consumerId], references: [id])
   consumerId Int

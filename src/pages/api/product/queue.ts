@@ -8,7 +8,7 @@ type Product = {
   publicId: string;
   target: string;
   slug: string;
-  average: number;
+  average: number | null;
 };
 
 type ResponseData = Product | { message: string };
