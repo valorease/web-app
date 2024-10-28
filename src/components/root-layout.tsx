@@ -51,10 +51,12 @@ import { signOut, useSession } from "next-auth/react";
 
 import Link from "next/link";
 
+import React from "react";
+
 interface RootLayoutProps {
   children: React.ReactNode;
   className?: string;
-  breadcrumb?: [string, string][];
+  breadcrumb?: ([string, string] | string)[];
 }
 
 export default function RootLayout({
@@ -66,7 +68,7 @@ export default function RootLayout({
 
   return (
     <SidebarProvider>
-      <div id="app-site" className={`flex min-h-screen w-screen ${className}`}>
+      <div id="app-site" className="flex min-h-screen w-screen">
         <Sidebar collapsible="icon">
           <SidebarHeader className="p-0 pt-[6px]">
             <SidebarGroup>
@@ -76,10 +78,10 @@ export default function RootLayout({
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <a href="/dashboard">
+                      <Link href="/dashboard">
                         <HomeIcon />
                         <span>Início</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -102,28 +104,28 @@ export default function RootLayout({
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                          <a href="/products">
+                          <Link href="/products">
                             <PackageSearchIcon />
                             <span>Produtos</span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
 
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                          <a href="/reports">
+                          <Link href="/reports">
                             <ClipboardPenIcon />
                             <span>Relatórios</span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
 
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                          <a href="/settings">
+                          <Link href="/settings">
                             <Settings2Icon />
                             <span>Configurações</span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
@@ -174,28 +176,34 @@ export default function RootLayout({
           </SidebarFooter>
         </Sidebar>
 
-        <div className="p-2 flex flex-col min-h-full">
+        <div className="p-2 flex flex-col min-h-full w-full">
           <div className="flex gap-4 p-2 items-center">
             <SidebarTrigger />
 
             {breadcrumb !== undefined && (
               <Breadcrumb>
                 <BreadcrumbList>
-                  {breadcrumb.map(([link, label], index) => (
-                    <>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href={link}>{label}</BreadcrumbLink>
-                      </BreadcrumbItem>
+                  {breadcrumb.map((item, index) =>
+                    index + 1 < breadcrumb.length ? (
+                      <React.Fragment key={index}>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink href={item[0]}>
+                            {item[1]}
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
 
-                      {index + 1 < breadcrumb.length && <BreadcrumbSeparator />}
-                    </>
-                  ))}
+                        <BreadcrumbSeparator />
+                      </React.Fragment>
+                    ) : (
+                      <BreadcrumbPage>{item}</BreadcrumbPage>
+                    )
+                  )}
                 </BreadcrumbList>
               </Breadcrumb>
             )}
           </div>
 
-          <div className="h-full w-full p-2">{children}</div>
+          <div className={`h-full w-full p-4 ${className}`}>{children}</div>
         </div>
       </div>
     </SidebarProvider>

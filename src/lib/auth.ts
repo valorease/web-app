@@ -38,7 +38,8 @@ export const authOptions: NextAuthOptions = {
         }
 
         return {
-          id: consumer.publicId,
+          id: consumer.id,
+          publicId: consumer.publicId,
           email: consumer.email,
           name: consumer.name,
         };
@@ -55,13 +56,15 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.publicId = user.publicId;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.consumer = {
-          publicId: token.id as string,
+          id: token?.id as number,
+          publicId: token?.publicId as string,
           email: session.user?.email as string,
           name: session.user?.name as string,
         };

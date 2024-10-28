@@ -65,9 +65,11 @@ export default function ExternalLayout({
         </p>
 
         <p className="text-end">
-          <a href="tel:+5514912345678">(14) 91234-5678</a>
+          <Link href="tel:+5514912345678">(14) 91234-5678</Link>
           <br />
-          <a href="mailto:contato@valorease.site">contato@valorease.site</a>
+          <Link href="mailto:contato@valorease.site">
+            contato@valorease.site
+          </Link>
         </p>
       </footer>
     </div>
