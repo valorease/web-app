@@ -4,8 +4,8 @@ COPY . /valorease-web-app
 
 WORKDIR /valorease-web-app
 
-RUN npm install \
-    & npm install -g next \
-    & npx prisma migrate deploy
+RUN npm install
 
-CMD npm run dev
+RUN npm install -g next
+
+CMD npx prisma migrate deploy && npm run dev
