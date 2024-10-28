@@ -63,7 +63,7 @@ model Plan {
   productQuantityLimit          Int
   viewHistoryLimitInMonths      Int
   updateProductTimeWindowInDays Int
-  relatoryType                  Int
+  reportType                    Int
 
   PlanBenefits PlanBenefits[]
   Consumer     Consumer[]

@@ -1,6 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import prisma from "@/lib/prisma";
 
-import { PrismaClient } from "@prisma/client";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 import { z } from "zod";
 
@@ -11,7 +11,7 @@ type Product = {
   average: number;
 };
 
-type ResponseData = Product | { error: string };
+type ResponseData = Product | { message: string };
 
 const RequestPutBodySchema = z.object({
   publicId: z.string(),
@@ -19,8 +19,6 @@ const RequestPutBodySchema = z.object({
   url: z.string().url(),
   prices: z.number().positive().array(),
 });
-
-const prisma = new PrismaClient();
 
 export default async function handler(
   request: NextApiRequest,
@@ -35,10 +33,10 @@ export default async function handler(
         return handlePut(request, response);
 
       default:
-        return response.status(405).json({ error: "Method not allowed" });
+        return response.status(405).json({ message: "Método não autorizado" });
     }
   } catch (error) {
-    return response.status(500).json({ error: "Internal server error" });
+    return response.status(500).json({ message: "Erro interno" });
   }
 }
 
@@ -68,7 +66,7 @@ async function handlePut(
   const { success, data } = RequestPutBodySchema.safeParse(request.body);
 
   if (!success) {
-    return response.status(400).json({ error: "Invalid request data" });
+    return response.status(400).json({ message: "Dados inválidos" });
   }
 
   try {
@@ -78,7 +76,7 @@ async function handlePut(
       });
 
       if (!product) {
-        return response.status(404).json({ error: "Product not found" });
+        return response.status(404).json({ message: "Produto não encontrado" });
       }
 
       await tx.productHistory.createMany({
@@ -107,7 +105,9 @@ async function handlePut(
       });
     });
   } catch (error) {
-    return response.status(500).json({ error: "Failed to update product" });
+    return response
+      .status(500)
+      .json({ message: "Erro ao atualizar o produto" });
   }
 }
 

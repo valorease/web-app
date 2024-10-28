@@ -9,6 +9,8 @@ services:
       - 3000:3000
     volumes:
       - ./:/valorease-web-app
+      - ./node_modules:/valorease-web-app/node_modules
+      - ./.next:/valorease-web-app/.next
       - ./.env.example:/valorease-web-app/.env
     stdin_open: true
     tty: true
