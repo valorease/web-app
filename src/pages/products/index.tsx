@@ -19,7 +19,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Product } from "@prisma/client";
+import { Plan, Product } from "@prisma/client";
+import plan from "@/lib/plan";
 
 export const getServerSideProps = async (context: any) => {
   const session = await getSession(context);
@@ -34,7 +35,10 @@ export const getServerSideProps = async (context: any) => {
   });
 
   return {
-    props: { products: JSON.parse(JSON.stringify(products)) as Product[] },
+    props: {
+      products: JSON.parse(JSON.stringify(products)) as Product[],
+      plan: await plan.byConsumer(session!.consumer.publicId),
+    },
   };
 };
 
@@ -49,15 +53,14 @@ const Products = ({ products }: { products: Product[] }) => (
 
         <CardContent>
           <p>
-            Última pesquisa:{" "}
             {product.lastSearch == null
-              ? "..."
-              : new Date(product.lastSearch).toLocaleDateString()}
+              ? "Nunca pesquisado"
+              : `Última pesquisa: ${new Date(
+                  product.lastSearch
+                ).toLocaleDateString()}`}
           </p>
 
-          <p>
-            Preço médio: {product.average ? `R\$${product.average}` : "..."}
-          </p>
+          {product.average && <p>Preço médio: R${product.average}</p>}
         </CardContent>
 
         <CardFooter className="gap-2">
@@ -76,15 +79,24 @@ const Products = ({ products }: { products: Product[] }) => (
 
 export default function Page({
   products,
+  plan,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const blockAdd = products.length >= plan.productQuantityLimit;
+
   return (
     <RootLayout breadcrumb={["Produtos"]} className="flex flex-col gap-4">
-      <Button asChild className="w-fit">
-        <Link href="/products/add">
-          <PlusIcon />
-          Adicionar
+      <div className="flex gap-4 items-center">
+        <Link href={blockAdd ? "#" : "/products/add"}>
+          <Button className="w-fit" disabled={blockAdd}>
+            <PlusIcon />
+            Adicionar
+          </Button>
         </Link>
-      </Button>
+
+        <p>
+          {products.length} / {plan.productQuantityLimit}
+        </p>
+      </div>
 
       {products.length < 1 ? (
         <p>Nenhum produto adicionado.</p>
