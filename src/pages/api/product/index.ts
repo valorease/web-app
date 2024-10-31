@@ -30,10 +30,20 @@ export default async function handler(
     where: {
       publicId: data.publicId,
     },
+    include: {
+      Product: true,
+      plan: true,
+    },
   });
 
   if (!consumer) {
     return response.status(400).json({ message: "Dados incorretos" });
+  }
+
+  if (consumer.plan.productQuantityLimit >= consumer.Product.length) {
+    return response
+      .status(400)
+      .json({ message: "Limite de produtos atingido" });
   }
 
   try {

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import RootLayout from "@/components/root-layout";
+import { Button } from "@/components/ui/button";
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "next-auth/react";
@@ -19,8 +19,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Plan, Product } from "@prisma/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 import plan from "@/lib/plan";
+
+import { Product } from "@prisma/client";
 
 export const getServerSideProps = async (context: any) => {
   const session = await getSession(context);
@@ -84,7 +93,17 @@ const Products = ({ products }: { products: Product[] }) => (
           </Button>
 
           <Button variant="outline" className="w-full">
-            Remover
+            <Dialog>
+              <DialogTrigger>Remover</DialogTrigger>
+
+              <DialogContent>
+                <DialogHeader>
+                  <DialogDescription>
+                    <p>Tem certeza que deseja remover esse produto?</p>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </Button>
         </CardFooter>
       </Card>

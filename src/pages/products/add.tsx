@@ -98,6 +98,7 @@ const useProductSubmission = () => {
 
       await router.push("/products");
     } catch (error) {
+      setPreviewUrl(null);
       setSubmitState({
         isLoading: false,
         error: error instanceof Error ? error.message : "Erro ao criar produto",
