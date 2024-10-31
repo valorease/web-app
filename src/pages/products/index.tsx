@@ -45,7 +45,10 @@ export const getServerSideProps = async (context: any) => {
 const Products = ({ products }: { products: Product[] }) => (
   <div className="flex flex-wrap gap-4">
     {products.map((product) => (
-      <Card key={product.publicId} className="flex-1 max-w-96">
+      <Card
+        key={product.publicId}
+        className="flex-1 max-w-96 flex flex-col justify-between"
+      >
         <CardHeader>
           <CardTitle>{product.name}</CardTitle>
           <CardDescription>{product.description}</CardDescription>
@@ -53,14 +56,26 @@ const Products = ({ products }: { products: Product[] }) => (
 
         <CardContent>
           <p>
-            {product.lastSearch == null
-              ? "Nunca pesquisado"
-              : `Última pesquisa: ${new Date(
-                  product.lastSearch
-                ).toLocaleDateString()}`}
+            {product.lastSearch == null ? (
+              "Nunca pesquisado"
+            ) : (
+              <>
+                Última pesquisa:{" "}
+                <span className="font-bold">
+                  {new Date(product.lastSearch).toLocaleDateString()}
+                </span>
+              </>
+            )}
           </p>
 
-          {product.average && <p>Preço médio: R${product.average}</p>}
+          {product.average && (
+            <p>
+              Preço médio:{" "}
+              <span className="font-bold">
+                R$ {product.average.toFixed(2).replace(".", ",")}
+              </span>
+            </p>
+          )}
         </CardContent>
 
         <CardFooter className="gap-2">

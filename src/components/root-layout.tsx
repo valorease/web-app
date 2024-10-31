@@ -51,7 +51,9 @@ import { signOut, useSession } from "next-auth/react";
 
 import Link from "next/link";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import { getCookie, getCookies, setCookie } from "cookies-next";
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -66,8 +68,27 @@ export default function RootLayout({
 }: RootLayoutProps) {
   const session = useSession();
 
+  const [isClient, setIsClient] = useState(false);
+
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const sidebarState = getCookie("sidebar");
+    setOpen(sidebarState === "true");
+  }, []);
+
+  const onOpenChange = (open: boolean) => {
+    setOpen(open);
+    setCookie("sidebar", open.toString());
+  };
+
+  if (!isClient) {
+    return null;
+  }
+
   return (
-    <SidebarProvider>
+    <SidebarProvider open={open} onOpenChange={onOpenChange}>
       <div id="app-site" className="flex min-h-screen w-screen">
         <Sidebar collapsible="icon">
           <SidebarHeader className="p-0 pt-[6px]">

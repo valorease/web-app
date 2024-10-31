@@ -43,7 +43,10 @@ export default async function handler(
 async function handleGet(response: NextApiResponse<ResponseData>) {
   const product = await prisma.product.findFirst({
     orderBy: {
-      lastSearch: "desc",
+      lastSearch: {
+        sort: "desc",
+        nulls: "first",
+      },
     },
   });
 

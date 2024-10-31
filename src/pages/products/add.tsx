@@ -160,15 +160,17 @@ export default function Page() {
       className=""
     >
       <Dialog open={!!previewUrl} onOpenChange={() => handleCancel()}>
-        <DialogContent className="sm:min-w-[80%] sm:min-h-[80%]">
+        <DialogContent className="w-[90%] sm:min-w-[80%] h-[90%] sm:min-h-[80%] rounded-xl">
           <DialogHeader>
-            <DialogTitle>Antes de continuarmos...</DialogTitle>
+            <DialogTitle className="text-center">
+              Antes de continuarmos...
+            </DialogTitle>
 
-            <DialogDescription className="gap-4 flex flex-col h-full">
+            <DialogDescription className="gap-4 flex flex-col h-full items-center justify-between">
               <p>Esse é o resultado que você busca?</p>
 
               {previewUrl && (
-                <div className="relative min-h-[80%] w-full">
+                <div className="relative min-h-[80%] h-full w-full">
                   <iframe
                     className="absolute inset-0 w-full h-full rounded-xl"
                     src={previewUrl}
