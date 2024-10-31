@@ -1,8 +1,8 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 import RootLayout from "@/components/root-layout";
-
-import { useRouter } from "next/router";
 
 import {
   Dialog,
@@ -10,30 +10,15 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import {
-  AlertCircleIcon,
-  CheckIcon,
-  LoaderIcon,
-  PlusIcon,
-  SaveIcon,
-  XIcon,
-} from "lucide-react";
-
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 import {
   Select,
@@ -42,73 +27,131 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSession } from "next-auth/react";
+
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+
+import {
+  AlertCircleIcon,
+  CheckIcon,
+  LoaderIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
+
 import { slugify } from "@/lib/product";
+
 import { Target } from "@/types/target";
 
-export default function Page() {
-  const session = useSession();
+interface SubmitState {
+  isLoading: boolean;
+  error: string | null;
+}
 
+const useProductSubmission = () => {
   const router = useRouter();
 
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [confirmModalIsLoading, setConfirmModalIsLoading] = useState(false);
-  const [productSource, setProductSource] = useState<string | undefined>(
-    undefined
-  );
+  const { data: session } = useSession();
 
-  let formData: FormData | undefined;
+  const [submitState, setSubmitState] = useState<SubmitState>({
+    isLoading: false,
+    error: null,
+  });
+
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [currentFormData, setCurrentFormData] = useState<FormData | null>(null);
+
+  const getPreviewUrl = useCallback((name: string, target: Target) => {
+    return "https://lista.mercadolivre.com.br/" + slugify(name, target);
+  }, []);
+
+  const submitProduct = async (formData: FormData) => {
+    if (!session?.consumer?.publicId) {
+      setSubmitState({
+        isLoading: false,
+        error: "Sessão expirada. Por favor, faça login novamente.",
+      });
+      return;
+    }
+
+    setSubmitState({ isLoading: true, error: null });
+
+    try {
+      const response = await fetch("/api/product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          description: formData.get("description"),
+          target: formData.get("target"),
+          publicId: session.consumer.publicId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message ?? "Erro ao criar produto");
+      }
+
+      await router.push("/products");
+    } catch (error) {
+      setSubmitState({
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Erro ao criar produto",
+      });
+    }
+  };
+
+  return {
+    submitState,
+    previewUrl,
+    setPreviewUrl,
+    getPreviewUrl,
+    submitProduct,
+    currentFormData,
+    setCurrentFormData,
+  };
+};
+
+export default function Page() {
+  const {
+    submitState,
+    previewUrl,
+    setPreviewUrl,
+    getPreviewUrl,
+    submitProduct,
+    currentFormData,
+    setCurrentFormData,
+  } = useProductSubmission();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setIsLoading(true);
-    setError(null);
+    const formData = new FormData(event.currentTarget);
+    const name = formData.get("name")?.toString();
+    const target = formData.get("target")?.toString() as Target;
 
-    formData = new FormData(event.target as HTMLFormElement);
+    if (!name || !target) {
+      return;
+    }
 
-    setProductSource(
-      "https://lista.mercadolivre.com.br/" +
-        slugify(
-          formData.get("name")!.toString(),
-          formData.get("target")?.toString() as Target
-        )
-    );
+    setCurrentFormData(formData);
+    const url = getPreviewUrl(name, target);
+    setPreviewUrl(url);
   };
 
-  const finishSubmit = async () => {
-    setProductSource(undefined);
-    setConfirmModalIsLoading(true);
-
-    try {
-      const registerResponse = await fetch("/api/product", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData!.get("name"),
-          target: formData!.get("target"),
-          description: formData!.get("description"),
-          publicId: session.data?.consumer.publicId,
-        }),
-      });
-
-      const data = await registerResponse.json();
-
-      if (!registerResponse.ok) {
-        throw new Error(data.message ?? "Erro ao criar produto");
-      }
-
-      router.push("/products");
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Erro ao criar produto"
-      );
-    } finally {
-      setIsLoading(false);
-      setConfirmModalIsLoading(false);
+  const handleConfirmSubmit = async () => {
+    if (currentFormData) {
+      await submitProduct(currentFormData);
     }
+  };
+
+  const handleCancel = () => {
+    setPreviewUrl(null);
+    setCurrentFormData(null);
   };
 
   return (
@@ -116,45 +159,50 @@ export default function Page() {
       breadcrumb={[["/products", "Produtos"], "Adicionar"]}
       className=""
     >
-      <Dialog open={productSource !== undefined}>
+      <Dialog open={!!previewUrl} onOpenChange={() => handleCancel()}>
         <DialogContent className="sm:min-w-[80%] sm:min-h-[80%]">
           <DialogHeader>
             <DialogTitle>Antes de continuarmos...</DialogTitle>
+
             <DialogDescription className="gap-4 flex flex-col h-full">
-              Esse é o resultado que você busca?
-              <iframe
-                className="min-h-[80%] w-full rounded-xl"
-                src={productSource}
-              ></iframe>
+              <p>Esse é o resultado que você busca?</p>
+
+              {previewUrl && (
+                <div className="relative min-h-[80%] w-full">
+                  <iframe
+                    className="absolute inset-0 w-full h-full rounded-xl"
+                    src={previewUrl}
+                  />
+                </div>
+              )}
+
               <div className="flex gap-4">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setProductSource(undefined);
-                    setIsLoading(false);
-                    setConfirmModalIsLoading(false);
-                  }}
+                  onClick={handleCancel}
+                  disabled={submitState.isLoading}
                 >
-                  <XIcon />
+                  <XIcon className="w-4 h-4 mr-2" />
                   Cancelar
                 </Button>
+
                 <Button
-                  onClick={() => finishSubmit()}
+                  onClick={handleConfirmSubmit}
                   className="w-full"
-                  disabled={confirmModalIsLoading}
+                  disabled={submitState.isLoading}
                 >
-                  {confirmModalIsLoading ? (
+                  {submitState.isLoading ? (
                     <>
-                      <LoaderIcon />
+                      <LoaderIcon className="w-4 h-4 mr-2 animate-spin" />
                       Adicionando...
                     </>
                   ) : (
                     <>
-                      <CheckIcon />
-                      Sim
+                      <CheckIcon className="w-4 h-4 mr-2" />
+                      Confirmar
                     </>
                   )}
-                </Button>{" "}
+                </Button>
               </div>
             </DialogDescription>
           </DialogHeader>
@@ -164,6 +212,7 @@ export default function Page() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Adicionar produto</CardTitle>
+
           <CardDescription>
             O nome do produto será pesquisado na loja virtual escolhida como
             alvo
@@ -172,11 +221,10 @@ export default function Page() {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
+            {submitState.error && (
               <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md flex gap-2 items-center">
-                <AlertCircleIcon />
-
-                {error}
+                <AlertCircleIcon className="w-4 h-4" />
+                {submitState.error}
               </div>
             )}
 
@@ -188,7 +236,7 @@ export default function Page() {
                 type="text"
                 placeholder="Celular iPhone 15"
                 required
-                disabled={isLoading}
+                disabled={submitState.isLoading}
               />
             </div>
 
@@ -198,17 +246,17 @@ export default function Page() {
                 id="description"
                 name="description"
                 required
-                disabled={isLoading}
+                disabled={submitState.isLoading}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="target">Loja alvo</Label>
-
-              <Select name="target" disabled={isLoading} required>
+              <Select name="target" disabled={submitState.isLoading} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="" />
+                  <SelectValue placeholder="Selecione uma loja" />
                 </SelectTrigger>
+
                 <SelectContent>
                   <SelectItem value="ML">Mercado Livre</SelectItem>
                   <SelectItem value="AZ">Amazon</SelectItem>
@@ -216,15 +264,19 @@ export default function Page() {
               </Select>
             </div>
 
-            <Button type="submit" className="w-full !mt-8" disabled={isLoading}>
-              {isLoading ? (
+            <Button
+              type="submit"
+              className="w-full !mt-8"
+              disabled={submitState.isLoading}
+            >
+              {submitState.isLoading ? (
                 <>
-                  <LoaderIcon />
-                  Adicionando...
+                  <LoaderIcon className="w-4 h-4 mr-2 animate-spin" />
+                  Processando...
                 </>
               ) : (
                 <>
-                  <PlusIcon />
+                  <PlusIcon className="w-4 h-4 mr-2" />
                   Adicionar
                 </>
               )}
