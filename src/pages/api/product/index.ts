@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession, GetSessionParams } from "next-auth/react";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { slugify } from "@/lib/product";
+import { Target } from "@/types/target";
 
 const RequestPostBodySchema = z.object({
   name: z.string(),
@@ -34,24 +36,12 @@ export default async function handler(
     return response.status(400).json({ message: "Dados incorretos" });
   }
 
-  // ! TODO: temporary
-  const slugify = (text: string) => {
-    return text
-      .toString()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  };
-
   try {
     const product = await prisma.product.create({
       data: {
         name: data.name,
         target: data.target,
-        slug: slugify(data.name),
+        slug: slugify(data.name, data.target as Target),
         description: data.description,
         consumerId: consumer.id,
       },

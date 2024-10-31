@@ -5,6 +5,15 @@ import RootLayout from "@/components/root-layout";
 import { useRouter } from "next/router";
 
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
   Card,
   CardContent,
   CardDescription,
@@ -13,7 +22,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { AlertCircleIcon, LoaderIcon, PlusIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  CheckIcon,
+  LoaderIcon,
+  PlusIcon,
+  SaveIcon,
+  XIcon,
+} from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -28,6 +44,8 @@ import {
 } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
 import { Textarea } from "@/components/ui/textarea";
+import { slugify } from "@/lib/product";
+import { Target } from "@/types/target";
 
 export default function Page() {
   const session = useSession();
@@ -36,6 +54,12 @@ export default function Page() {
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmModalIsLoading, setConfirmModalIsLoading] = useState(false);
+  const [productSource, setProductSource] = useState<string | undefined>(
+    undefined
+  );
+
+  let formData: FormData | undefined;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,16 +67,29 @@ export default function Page() {
     setIsLoading(true);
     setError(null);
 
-    const formData = new FormData(event.target as HTMLFormElement);
+    formData = new FormData(event.target as HTMLFormElement);
+
+    setProductSource(
+      "https://lista.mercadolivre.com.br/" +
+        slugify(
+          formData.get("name")!.toString(),
+          formData.get("target")?.toString() as Target
+        )
+    );
+  };
+
+  const finishSubmit = async () => {
+    setProductSource(undefined);
+    setConfirmModalIsLoading(true);
 
     try {
       const registerResponse = await fetch("/api/product", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.get("name"),
-          target: formData.get("target"),
-          description: formData.get("description"),
+          name: formData!.get("name"),
+          target: formData!.get("target"),
+          description: formData!.get("description"),
           publicId: session.data?.consumer.publicId,
         }),
       });
@@ -70,6 +107,7 @@ export default function Page() {
       );
     } finally {
       setIsLoading(false);
+      setConfirmModalIsLoading(false);
     }
   };
 
@@ -78,6 +116,51 @@ export default function Page() {
       breadcrumb={[["/products", "Produtos"], "Adicionar"]}
       className=""
     >
+      <Dialog open={productSource !== undefined}>
+        <DialogContent className="sm:min-w-[80%] sm:min-h-[80%]">
+          <DialogHeader>
+            <DialogTitle>Antes de continuarmos...</DialogTitle>
+            <DialogDescription className="gap-4 flex flex-col h-full">
+              Esse é o resultado que você busca?
+              <iframe
+                className="min-h-[80%] w-full rounded-xl"
+                src={productSource}
+              ></iframe>
+              <div className="flex gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setProductSource(undefined);
+                    setIsLoading(false);
+                    setConfirmModalIsLoading(false);
+                  }}
+                >
+                  <XIcon />
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => finishSubmit()}
+                  className="w-full"
+                  disabled={confirmModalIsLoading}
+                >
+                  {confirmModalIsLoading ? (
+                    <>
+                      <LoaderIcon />
+                      Adicionando...
+                    </>
+                  ) : (
+                    <>
+                      <CheckIcon />
+                      Sim
+                    </>
+                  )}
+                </Button>{" "}
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Adicionar produto</CardTitle>
