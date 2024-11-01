@@ -1,9 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { getSession, GetSessionParams } from "next-auth/react";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
 import { slugify } from "@/lib/product";
 import { Target } from "@/types/target";
+import { NextApiRequest, NextApiResponse } from "next";
+import { z } from "zod";
 
 const RequestPostBodySchema = z.object({
   name: z.string(),
@@ -40,7 +39,7 @@ export default async function handler(
     return response.status(400).json({ message: "Dados incorretos" });
   }
 
-  if (consumer.plan.productQuantityLimit >= consumer.Product.length) {
+  if (consumer.Product.length >= consumer.plan.productQuantityLimit) {
     return response
       .status(400)
       .json({ message: "Limite de produtos atingido" });
