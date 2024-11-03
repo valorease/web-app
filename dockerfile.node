@@ -7,6 +7,7 @@ COPY prisma ./prisma
 COPY tsconfig.json ./
 
 RUN npm install
+RUN npm install -g prisma
 RUN npm install -g next tsx typescript
 RUN npm install --save-dev tslib @types/node
 
