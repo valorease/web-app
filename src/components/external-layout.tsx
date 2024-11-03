@@ -31,12 +31,12 @@ export default function ExternalLayout({
       id="app-site"
       className={`flex flex-col justify-between min-h-screen w-screen ${className}`}
     >
-      <header className="p-8 flex justify-between items-center">
+      <header className="p-6 px-8 flex justify-between items-center m-2 rounded-2xl">
         <Link href="https://valorease.site" className="text-lg">
           Valorease <strong>App</strong>
         </Link>
 
-        <NavigationMenu>
+        <NavigationMenu className="hidden sm:flex">
           <NavigationMenuList className="gap-2 sm:gap-4 md:gap-8">
             {...menuLinks.map(([link, label]) => {
               return (
@@ -62,14 +62,6 @@ export default function ExternalLayout({
           <strong>Valorease</strong>
           <br />
           2024 | Todos os direitos reservados
-        </p>
-
-        <p className="text-end">
-          <Link href="tel:+5514912345678">(14) 91234-5678</Link>
-          <br />
-          <Link href="mailto:contato@valorease.site">
-            contato@valorease.site
-          </Link>
         </p>
       </footer>
     </div>
