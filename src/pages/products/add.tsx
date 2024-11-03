@@ -1,6 +1,6 @@
-import { FormEvent, useCallback, useState } from "react";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { FormEvent, useCallback, useState } from "react";
 
 import RootLayout from "@/components/root-layout";
 
@@ -28,9 +28,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
@@ -43,6 +43,7 @@ import {
 
 import { slugify } from "@/lib/product";
 
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Target } from "@/types/target";
 
 interface SubmitState {
@@ -150,7 +151,10 @@ export default function Page() {
     }
   };
 
+  const [loadingIframe, setLoadingIframe] = useState(true);
+
   const handleCancel = () => {
+    setLoadingIframe(true);
     setPreviewUrl(null);
     setCurrentFormData(null);
   };
@@ -171,10 +175,13 @@ export default function Page() {
               <p>Esse é o resultado que você busca?</p>
 
               {previewUrl && (
-                <div className="relative min-h-[80%] h-full w-full">
+                <div className="relative min-h-[80%] h-full w-full flex flex-col items-center justify-center">
+                  {loadingIframe && <LoadingSpinner className="h-20 w-20" />}
+
                   <iframe
                     className="absolute inset-0 w-full h-full rounded-xl"
                     src={previewUrl}
+                    onLoad={() => setLoadingIframe(false)}
                   />
                 </div>
               )}
