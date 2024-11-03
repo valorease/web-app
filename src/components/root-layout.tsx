@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/sidebar";
 
 import {
-  DropdownMenuTrigger,
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenu,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import {
@@ -53,7 +53,7 @@ import Link from "next/link";
 
 import React, { useEffect, useState } from "react";
 
-import { getCookie, getCookies, setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -75,7 +75,7 @@ export default function RootLayout({
   useEffect(() => {
     setIsClient(true);
     const sidebarState = getCookie("sidebar");
-    setOpen(sidebarState === "true");
+    setOpen(sidebarState !== "true");
   }, []);
 
   const onOpenChange = (open: boolean) => {

@@ -17,6 +17,7 @@ COPY . .
 
 RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
   echo 'npx prisma migrate deploy' >> /docker-entrypoint.sh && \
+  echo 'npx prisma generate' >> /docker-entrypoint.sh && \
   echo 'npx tsx prisma/seed.ts' >> /docker-entrypoint.sh && \
   echo 'npm run dev' >> /docker-entrypoint.sh
 
