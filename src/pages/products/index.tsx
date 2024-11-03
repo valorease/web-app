@@ -21,15 +21,20 @@ import {
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
 import plan from "@/lib/plan";
 
 import { Product } from "@prisma/client";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 export const getServerSideProps = async (context: any) => {
   const session = await getSession(context);
@@ -51,65 +56,98 @@ export const getServerSideProps = async (context: any) => {
   };
 };
 
-const Products = ({ products }: { products: Product[] }) => (
-  <div className="flex flex-wrap gap-4">
-    {products.map((product) => (
-      <Card
-        key={product.publicId}
-        className="flex-1 max-w-96 flex flex-col justify-between"
-      >
-        <CardHeader>
-          <CardTitle>{product.name}</CardTitle>
-          <CardDescription>{product.description}</CardDescription>
-        </CardHeader>
+const Products = ({ products }: { products: Product[] }) => {
+  const router = useRouter();
 
-        <CardContent>
-          <p>
-            {product.lastSearch == null ? (
-              "Nunca pesquisado"
-            ) : (
-              <>
-                Última pesquisa:{" "}
-                <span className="font-bold">
-                  {new Date(product.lastSearch).toLocaleDateString()}
-                </span>
-              </>
-            )}
-          </p>
+  const [isDeleting, setIsDeleting] = useState(false);
 
-          {product.average && (
+  const handleDelete = async (publicId: string) => {
+    setIsDeleting(true);
+
+    await fetch(`/api/product/${publicId}`, {
+      method: "DELETE",
+    });
+
+    router.reload();
+  };
+
+  return (
+    <div className="flex flex-wrap gap-4">
+      {products.map((product) => (
+        <Card
+          key={product.publicId}
+          className="flex-1 max-w-96 flex flex-col justify-between"
+        >
+          <CardHeader>
+            <CardTitle>{product.name}</CardTitle>
+            <CardDescription>{product.description}</CardDescription>
+          </CardHeader>
+
+          <CardContent>
             <p>
-              Preço médio:{" "}
-              <span className="font-bold">
-                R$ {product.average.toFixed(2).replace(".", ",")}
-              </span>
+              {product.lastSearch == null ? (
+                "Nunca pesquisado"
+              ) : (
+                <>
+                  Última pesquisa:{" "}
+                  <span className="font-bold">
+                    {new Date(product.lastSearch).toLocaleDateString()}
+                  </span>
+                </>
+              )}
             </p>
-          )}
-        </CardContent>
 
-        <CardFooter className="gap-2">
-          <Button variant="secondary" className="w-full" asChild>
-            <Link href={`/products/${product.publicId}`}>Detalhes</Link>
-          </Button>
+            {product.average && (
+              <p>
+                Preço médio:{" "}
+                <span className="font-bold">
+                  R$ {product.average.toFixed(2).replace(".", ",")}
+                </span>
+              </p>
+            )}
+          </CardContent>
 
-          <Button variant="outline" className="w-full">
+          <CardFooter className="gap-2">
+            <Button variant="secondary" className="w-full" asChild>
+              <Link href={`/products/${product.publicId}`}>Detalhes</Link>
+            </Button>
+
             <Dialog>
-              <DialogTrigger>Remover</DialogTrigger>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  Remover
+                </Button>
+              </DialogTrigger>
 
               <DialogContent>
+                <DialogTitle>Remover produto</DialogTitle>
+
                 <DialogHeader>
                   <DialogDescription>
                     <p>Tem certeza que deseja remover esse produto?</p>
                   </DialogDescription>
+
+                  <DialogFooter className="!justify-center !mt-4">
+                    <DialogClose asChild>
+                      <Button variant="secondary">Cancelar</Button>
+                    </DialogClose>
+
+                    <Button
+                      onClick={() => handleDelete(product.publicId)}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Removendo..." : "Remover"}
+                    </Button>
+                  </DialogFooter>
                 </DialogHeader>
               </DialogContent>
             </Dialog>
-          </Button>
-        </CardFooter>
-      </Card>
-    ))}
-  </div>
-);
+          </CardFooter>
+        </Card>
+      ))}
+    </div>
+  );
+};
 
 export default function Page({
   products,
