@@ -75,7 +75,7 @@ export default function RootLayout({
   useEffect(() => {
     setIsClient(true);
     const sidebarState = getCookie("sidebar");
-    setOpen(sidebarState !== "true");
+    setOpen(sidebarState === "true" || sidebarState === undefined);
   }, []);
 
   const onOpenChange = (open: boolean) => {
