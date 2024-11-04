@@ -8,7 +8,7 @@ import type { InferGetServerSidePropsType } from "next";
 
 import Link from "next/link";
 
-import { PlusIcon } from "lucide-react";
+import { GhostIcon, PlusIcon } from "lucide-react";
 
 import {
   Card,
@@ -171,7 +171,11 @@ export default function Page({
       </div>
 
       {products.length < 1 ? (
-        <p>Nenhum produto adicionado.</p>
+        <div className="h-full w-full flex flex-col items-center justify-center gap-4">
+          <GhostIcon className="h-20 w-20" />
+
+          <p>Nenhum produto adicionado.</p>
+        </div>
       ) : (
         <Products products={products} />
       )}

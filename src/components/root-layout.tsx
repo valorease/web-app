@@ -40,7 +40,6 @@ import {
   ChevronUpIcon,
   CircleUserIcon,
   ClipboardPenIcon,
-  CreditCardIcon,
   HomeIcon,
   LogOutIcon,
   PackageSearchIcon,
@@ -178,16 +177,16 @@ export default function RootLayout({
                     <DropdownMenuItem asChild>
                       <Link href="/account">
                         <CircleUserIcon />
-                        <span>Sua conta</span>
+                        <span>Minha conta</span>
                       </Link>
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem asChild>
+                    {/* <DropdownMenuItem asChild>
                       <Link href="/payment">
                         <CreditCardIcon />
                         <span>Pagamento</span>
                       </Link>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
 
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOutIcon />

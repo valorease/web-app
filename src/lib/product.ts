@@ -21,3 +21,16 @@ const slugifyAZ = (original: string) => {
 export const slugify = (original: string, target: Target) => {
   return { ML: slugifyML, AZ: slugifyAZ }[target](original);
 };
+
+export const getURL = (name: string, target: Target): string => {
+  if (target === "AZ") {
+    return `https://amazon.com.br/s?k=iphone+15`;
+    return `https://amazon.com.br/s?k=${slugifyAZ(name)}`;
+  }
+
+  if (target === "ML") {
+    return `https://lista.mercadolivre.com.br/${slugifyML(name)}`;
+  }
+
+  return "";
+};

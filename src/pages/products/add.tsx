@@ -41,7 +41,7 @@ import {
   XIcon,
 } from "lucide-react";
 
-import { slugify } from "@/lib/product";
+import { getURL } from "@/lib/product";
 
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Target } from "@/types/target";
@@ -65,7 +65,7 @@ const useProductSubmission = () => {
   const [currentFormData, setCurrentFormData] = useState<FormData | null>(null);
 
   const getPreviewUrl = useCallback((name: string, target: Target) => {
-    return "https://lista.mercadolivre.com.br/" + slugify(name, target);
+    return getURL(name, target);
   }, []);
 
   const submitProduct = async (formData: FormData) => {
@@ -182,7 +182,7 @@ export default function Page() {
                     className="absolute inset-0 w-full h-full rounded-xl"
                     src={previewUrl}
                     onLoad={() => setLoadingIframe(false)}
-                  />
+                  ></iframe>
                 </div>
               )}
 
@@ -219,7 +219,7 @@ export default function Page() {
         </DialogContent>
       </Dialog>
 
-      <Card className="w-full max-w-md">
+      <Card className="w-full h-full">
         <CardHeader>
           <CardTitle>Adicionar produto</CardTitle>
 
@@ -229,8 +229,8 @@ export default function Page() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="w-full h-[calc(100%-100px)] flex items-center justify-center">
+          <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md">
             {submitState.error && (
               <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md flex gap-2 items-center">
                 <AlertCircleIcon className="w-4 h-4" />
