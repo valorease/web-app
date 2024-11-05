@@ -12,6 +12,7 @@ export default withAuth(
     }
 
     return NextResponse.next();
+    
   },
   {
     callbacks: {
