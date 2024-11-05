@@ -1,17 +1,29 @@
 import RootLayout from "@/components/root-layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { prisma } from "@/lib/prisma";
 import { Consumer } from "@prisma/client";
+import { HeartFilledIcon } from "@radix-ui/react-icons";
+
 import {
   AlertCircleIcon,
+  CheckIcon,
+  CloverIcon,
   CreditCardIcon,
   Edit3Icon,
+  HandIcon,
   TornadoIcon,
   UserCircle2Icon,
 } from "lucide-react";
+
 import { InferGetServerSidePropsType } from "next";
 import { getSession } from "next-auth/react";
 
@@ -24,15 +36,23 @@ export const getServerSideProps = async () => {
     },
   });
 
+  const plans = await prisma.plan.findMany({
+    include: {
+      PlanBenefits: true,
+    },
+  });
+
   return {
     props: {
       consumer: JSON.parse(JSON.stringify(consumer)) as Consumer,
+      plans: plans,
     },
   };
 };
 
 export default function Page({
   consumer,
+  plans,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <RootLayout breadcrumb={["Minha conta"]} className="flex flex-col gap-4">
@@ -59,6 +79,57 @@ export default function Page({
             <AlertCircleIcon />
             Excluir minha conta
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CloverIcon />
+            Planos
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex gap-8 flex-wrap justify-center w-full">
+          {plans.map((plan) => (
+            <Card
+              className={`flex-1 p-2 flex-col justify-between min-w-[300px] w-full ${
+                consumer.planId == plan.id ? "bg-[hsl(var(--accent))]" : ""
+              }`}
+            >
+              <CardHeader>
+                <CardTitle>{plan.name}</CardTitle>
+                <CardDescription>{plan.description}</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <p>{plan.price}</p>
+
+                <ul>
+                  {plan.PlanBenefits.map((benefit) => (
+                    <li className="flex gap-2 items-center">
+                      <CheckIcon className="h-4 w-4" />
+                      <p>{benefit.name}</p>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+
+              <CardDescription className="flex items-center justify-center">
+                {consumer.planId == plan.id ? (
+                  <p className="flex items-center gap-2">
+                    <HeartFilledIcon />
+                    Seu plano atual
+                  </p>
+                ) : (
+                  <Button>
+                    <HandIcon />
+                    Trocar para esse
+                  </Button>
+                )}
+              </CardDescription>
+            </Card>
+          ))}
         </CardContent>
       </Card>
 
