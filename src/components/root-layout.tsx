@@ -42,8 +42,9 @@ import {
   ClipboardPenIcon,
   HomeIcon,
   LogOutIcon,
+  MoonIcon,
   PackageSearchIcon,
-  Settings2Icon,
+  SunIcon,
 } from "lucide-react";
 
 import { signOut, useSession } from "next-auth/react";
@@ -53,6 +54,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 import { getCookie, setCookie } from "cookies-next";
+import { useTheme } from "next-themes";
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -85,6 +87,12 @@ export default function RootLayout({
   if (!isClient) {
     return null;
   }
+
+  const { setTheme, theme } = useTheme();
+
+  const changeTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <SidebarProvider open={open} onOpenChange={onOpenChange}>
@@ -140,14 +148,14 @@ export default function RootLayout({
                         </SidebarMenuButton>
                       </SidebarMenuItem>
 
-                      <SidebarMenuItem>
+                      {/* <SidebarMenuItem>
                         <SidebarMenuButton asChild>
                           <Link href="/settings">
                             <Settings2Icon />
                             <span>Configurações</span>
                           </Link>
                         </SidebarMenuButton>
-                      </SidebarMenuItem>
+                      </SidebarMenuItem> */}
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </CollapsibleContent>
@@ -181,12 +189,19 @@ export default function RootLayout({
                       </Link>
                     </DropdownMenuItem>
 
-                    {/* <DropdownMenuItem asChild>
-                      <Link href="/payment">
-                        <CreditCardIcon />
-                        <span>Pagamento</span>
-                      </Link>
-                    </DropdownMenuItem> */}
+                    <DropdownMenuItem onClick={changeTheme}>
+                      {theme === "dark" && (
+                        <>
+                          <SunIcon /> Modo claro
+                        </>
+                      )}
+
+                      {theme === "light" && (
+                        <>
+                          <MoonIcon /> Modo escuro
+                        </>
+                      )}
+                    </DropdownMenuItem>
 
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOutIcon />
