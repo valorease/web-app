@@ -21,7 +21,6 @@ export default function ExternalLayout({
   const router = useRouter();
 
   const menuLinks = [
-    ["https://valorease.site", "Início"],
     ["/login", "Entrar"],
     ["/register", "Cadastrar-se"],
   ];
