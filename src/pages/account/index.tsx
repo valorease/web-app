@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,8 +16,8 @@ import { HeartFilledIcon } from "@radix-ui/react-icons";
 
 import {
   AlertCircleIcon,
+  ChartNoAxesColumnIncreasingIcon,
   CheckIcon,
-  CloverIcon,
   CreditCardIcon,
   Edit3Icon,
   HandIcon,
@@ -85,15 +86,15 @@ export default function Page({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CloverIcon />
+            <ChartNoAxesColumnIncreasingIcon />
             Planos
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="flex gap-8 flex-wrap justify-center w-full">
+        <CardContent className="flex gap-6 flex-wrap justify-center w-full">
           {plans.map((plan) => (
             <Card
-              className={`flex-1 p-2 flex-col justify-between min-w-[300px] w-full ${
+              className={`flex-1 flex flex-col justify-between pb-4 w-full ${
                 consumer.planId == plan.id ? "bg-[hsl(var(--accent))]" : ""
               }`}
             >
@@ -103,7 +104,9 @@ export default function Page({
               </CardHeader>
 
               <CardContent>
-                <p>{plan.price}</p>
+                <p className="text-center p-2 mb-6 text-xl font-bold">
+                  R$ {plan.price} / mês
+                </p>
 
                 <ul>
                   {plan.PlanBenefits.map((benefit) => (
@@ -115,7 +118,7 @@ export default function Page({
                 </ul>
               </CardContent>
 
-              <CardDescription className="flex items-center justify-center">
+              <CardFooter className="flex items-center justify-center h-12">
                 {consumer.planId == plan.id ? (
                   <p className="flex items-center gap-2">
                     <HeartFilledIcon />
@@ -127,7 +130,7 @@ export default function Page({
                     Trocar para esse
                   </Button>
                 )}
-              </CardDescription>
+              </CardFooter>
             </Card>
           ))}
         </CardContent>
