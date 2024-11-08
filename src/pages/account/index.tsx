@@ -39,6 +39,7 @@ import {
   CreditCardIcon,
   Edit3Icon,
   HandIcon,
+  Loader2Icon,
   TornadoIcon,
   UserCircle2Icon,
 } from "lucide-react";
@@ -154,12 +155,10 @@ export default function Page({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteUser} className="bg-destructive">
-              {isLoading ? (
-                <div className="animate-spin">...</div>
-              ) : (
-                "Sim, excluir conta"
-              )}
+            <AlertDialogAction asChild>
+              <Button onClick={deleteUser}>
+                {isLoading ? <Loader2Icon /> : <>Sim, excluir conta</>}
+              </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
