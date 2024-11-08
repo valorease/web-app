@@ -11,7 +11,7 @@ model Consumer {
   id        Int      @id @default(autoincrement())
   publicId  String   @unique @default(uuid())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   name     String
   email    String @unique
@@ -27,7 +27,7 @@ model Product {
   id        Int      @id @default(autoincrement())
   publicId  String   @unique @default(uuid())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   name        String
   description String
@@ -43,8 +43,10 @@ model Product {
 }
 
 model ProductHistory {
-  id       Int    @id @default(autoincrement())
-  publicId String @unique @default(uuid())
+  id        Int      @id @default(autoincrement())
+  publicId  String   @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   price Float
   url   String

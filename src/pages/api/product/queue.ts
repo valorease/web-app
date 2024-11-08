@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { url } from "inspector";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -108,6 +109,7 @@ async function handlePut(
       });
     });
   } catch (error) {
+    console.log(error);
     return response
       .status(500)
       .json({ message: "Erro ao atualizar o produto" });
