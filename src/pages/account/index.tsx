@@ -1,4 +1,14 @@
 import RootLayout from "@/components/root-layout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,6 +18,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { prisma } from "@/lib/prisma";
@@ -26,7 +44,9 @@ import {
 } from "lucide-react";
 
 import { InferGetServerSidePropsType } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 export const getServerSideProps = async () => {
   const session = await getSession();
@@ -55,33 +75,102 @@ export default function Page({
   consumer,
   plans,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const router = useRouter();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState("");
+
+  const updatePassword = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/consumer/password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      setPasswordMessage("Sua senha foi atualizada com sucesso.");
+      setShowSuccessDialog(true);
+      setCurrentPassword("");
+      setNewPassword("");
+    } catch (error: any) {
+      setPasswordMessage(error.message || "Erro ao atualizar senha.");
+      setShowSuccessDialog(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteUser = async () => {
+    try {
+      setIsLoading(true);
+
+      await fetch("/api/consumer/delete", {
+        method: "DELETE",
+      });
+
+      await signOut();
+      router.push("/");
+    } catch (error: any) {
+    } finally {
+      setIsLoading(false);
+      setShowDeleteDialog(false);
+    }
+  };
+
   return (
     <RootLayout breadcrumb={["Minha conta"]} className="flex flex-col gap-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserCircle2Icon />
-            Olá, {consumer.name.split(" ").slice(0, 2).join(" ")}
-          </CardTitle>
-        </CardHeader>
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Senha</DialogTitle>
+            <DialogDescription>{passwordMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setShowSuccessDialog(false)}>OK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        <CardContent className="flex gap-4 flex-wrap">
-          <div className="flex flex-col sm:flex-row w-fit items-center justify-center gap-2">
-            <Label className="text-nowrap">E-mail cadastrado:</Label>
-            <Input type="email" readOnly value={consumer.email} />
-          </div>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente sua
+              conta e removerá seus dados de nossos servidores.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteUser} className="bg-destructive">
+              {isLoading ? (
+                <div className="animate-spin">...</div>
+              ) : (
+                "Sim, excluir conta"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-          <Button variant="secondary">
-            <Edit3Icon />
-            Alterar minha senha
-          </Button>
-
-          <Button variant="destructive" className="ms-auto">
-            <AlertCircleIcon />
-            Excluir minha conta
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="flex gap-2 items-center my-2">
+        <UserCircle2Icon className="h-8 w-8" />
+        <h1 className="text-xl font-bold">
+          Olá, {consumer.name.split(" ").slice(0, 2).join(" ")}
+        </h1>
+      </div>
 
       <Card>
         <CardHeader>
@@ -147,6 +236,78 @@ export default function Page({
         <CardContent className="flex gap-4 flex-wrap  items-center">
           <TornadoIcon />
           Há implementar...
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Edit3Icon />
+            Alterar minha senha
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex gap-4 flex-wrap">
+          <div className="flex flex-col sm:flex-row w-fit items-center justify-center gap-2">
+            <Label className="text-nowrap">Senha atual:</Label>
+            <Input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row w-fit items-center justify-center gap-2">
+            <Label className="text-nowrap">Nova senha:</Label>
+            <Input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+
+          <Button
+            variant="secondary"
+            onClick={updatePassword}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="animate-spin">...</div>
+            ) : (
+              <>
+                <CheckIcon />
+                Atualizar senha
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertCircleIcon />
+            Área perigosa
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex gap-4 flex-wrap items-center">
+          <Button
+            variant="destructive"
+            onClick={() => setShowDeleteDialog(true)}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="animate-spin">...</div>
+            ) : (
+              <>
+                <TornadoIcon />
+                Excluir conta
+              </>
+            )}
+          </Button>
         </CardContent>
       </Card>
     </RootLayout>
