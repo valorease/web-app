@@ -15,6 +15,9 @@ export const getServerSideProps = async (
     include: {
       ProductHistory: {
         take: 100,
+        orderBy: {
+          createdAt: "desc",
+        },
       },
     },
   });
