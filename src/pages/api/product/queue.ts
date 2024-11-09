@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { url } from "inspector";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -17,8 +16,12 @@ type ResponseData = Product | { message: string };
 const RequestPutBodySchema = z.object({
   publicId: z.string(),
   target: z.string(),
-  url: z.string().url(),
-  prices: z.number().positive().array(),
+  prices: z
+    .object({
+      price: z.number().positive(),
+      url: z.string().url(),
+    })
+    .array(),
 });
 
 export default async function handler(
@@ -86,8 +89,8 @@ async function handlePut(
       await tx.productHistory.createMany({
         data: data.prices.map((price) => ({
           productId: product.id,
-          url: data.url,
-          price,
+          url: price.url,
+          price: price.price,
         })),
       });
 
