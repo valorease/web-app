@@ -44,6 +44,8 @@ export default function Page({
       <h2>{product!.description}</h2>
 
       <section>
+        <h3>Histórico de preços</h3>
+
         {product?.ProductHistory.map((productHistory) => (
           <div>
             {productHistory.price}
