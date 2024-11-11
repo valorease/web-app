@@ -33,7 +33,6 @@ import { Consumer } from "@prisma/client";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 
 import {
-  AlertCircleIcon,
   ChartNoAxesColumnIncreasingIcon,
   CheckIcon,
   CreditCardIcon,
@@ -284,7 +283,7 @@ export default function Page({
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircleIcon />
@@ -308,7 +307,7 @@ export default function Page({
             )}
           </Button>
         </CardContent>
-      </Card>
+      </Card> */}
     </RootLayout>
   );
 }
