@@ -1,0 +1,29 @@
+FROM node:lts-alpine3.20
+
+WORKDIR /valorease-web-app
+
+COPY package*.json ./
+COPY prisma ./prisma
+COPY tsconfig.json ./
+
+RUN npm install
+RUN npm install -g prisma
+RUN npm install -g next tsx typescript
+RUN npm install --save-dev tslib @types/node
+
+RUN npx prisma generate
+
+COPY . .
+
+RUN npx prisma migrate deploy
+
+RUN npx tsx prisma/seed.ts
+
+RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+  echo 'npx prisma generate' >> /docker-entrypoint.sh && \
+  echo 'npm run build' >> /docker-entrypoint.sh
+  echo 'next start -p 80' >> /docker-entrypoint.sh
+
+RUN chmod +x /docker-entrypoint.sh
+
+CMD ["/bin/sh", "/docker-entrypoint.sh"]

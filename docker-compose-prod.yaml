@@ -1,0 +1,15 @@
+services:
+  valorease-web-app-node:
+    container_name: valorease-web-app-node
+    build:
+      context: .
+      dockerfile: dockerfile-prod.node
+    restart: no
+    ports:
+      - 80:80
+    volumes:
+      - .:/valorease-web-app:cached
+      - /valorease-web-app/node_modules
+      - /valorease-web-app/.next
+    stdin_open: true
+    tty: true
