@@ -84,11 +84,11 @@ export default function RootLayout({
     setCookie("sidebar", open.toString());
   };
 
+  const { setTheme, theme } = useTheme();
+
   if (!isClient) {
     return null;
   }
-
-  const { setTheme, theme } = useTheme();
 
   const changeTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");

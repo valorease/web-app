@@ -94,7 +94,9 @@ async function handlePut(
         })),
       });
 
-      const average = calculateAverage(data.prices);
+      const prices = data.prices.map((price) => price.price);
+
+      const average = calculateAverage(prices);
 
       await tx.product.update({
         where: { id: product.id },

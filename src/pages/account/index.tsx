@@ -184,6 +184,7 @@ export default function Page({
               className={`flex-1 flex flex-col justify-between pb-4 w-full ${
                 consumer.planId == plan.id ? "bg-[hsl(var(--accent))]" : ""
               }`}
+              key={plan.id}
             >
               <CardHeader>
                 <CardTitle>{plan.name}</CardTitle>
@@ -197,7 +198,7 @@ export default function Page({
 
                 <ul>
                   {plan.PlanBenefits.map((benefit) => (
-                    <li className="flex gap-2 items-center">
+                    <li key={benefit.name} className="flex gap-2 items-center">
                       <CheckIcon className="h-4 w-4" />
                       <p>{benefit.name}</p>
                     </li>

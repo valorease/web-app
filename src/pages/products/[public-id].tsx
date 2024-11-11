@@ -47,7 +47,7 @@ export default function Page({
         <h3>Histórico de preços</h3>
 
         {product?.ProductHistory.map((productHistory) => (
-          <div>
+          <div key={productHistory.url}>
             {productHistory.price}
             {productHistory.url}
             {productHistory.updatedAt?.toString()}
