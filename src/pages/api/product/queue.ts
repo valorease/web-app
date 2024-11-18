@@ -9,6 +9,7 @@ type Product = {
   target: string;
   slug: string;
   average: number | null;
+  lastSearch: Date | null;
 };
 
 type ResponseData = Product | { message: string };
@@ -63,6 +64,7 @@ async function handleGet(response: NextApiResponse<ResponseData>) {
     average: product.average,
     target: product.target,
     slug: product.slug,
+    lastSearch: product.lastSearch,
   });
 }
 
@@ -111,6 +113,7 @@ async function handlePut(
         target: product.target,
         slug: product.slug,
         average,
+        lastSearch: product.lastSearch,
       });
     });
   } catch (error) {
