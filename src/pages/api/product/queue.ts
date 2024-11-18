@@ -9,6 +9,7 @@ type Product = {
   target: string;
   slug: string;
   average: number | null;
+  lastSearch: Date | null;
 };
 
 type ResponseData = Product | { message: string };
@@ -16,8 +17,12 @@ type ResponseData = Product | { message: string };
 const RequestPutBodySchema = z.object({
   publicId: z.string(),
   target: z.string(),
-  url: z.string().url(),
-  prices: z.number().positive().array(),
+  prices: z
+    .object({
+      price: z.number().positive(),
+      url: z.string().url(),
+    })
+    .array(),
 });
 
 export default async function handler(
@@ -59,6 +64,7 @@ async function handleGet(response: NextApiResponse<ResponseData>) {
     average: product.average,
     target: product.target,
     slug: product.slug,
+    lastSearch: product.lastSearch,
   });
 }
 
@@ -85,12 +91,14 @@ async function handlePut(
       await tx.productHistory.createMany({
         data: data.prices.map((price) => ({
           productId: product.id,
-          url: data.url,
-          price,
+          url: price.url,
+          price: price.price,
         })),
       });
 
-      const average = calculateAverage(data.prices);
+      const prices = data.prices.map((price) => price.price);
+
+      const average = calculateAverage(prices);
 
       await tx.product.update({
         where: { id: product.id },
@@ -105,9 +113,11 @@ async function handlePut(
         target: product.target,
         slug: product.slug,
         average,
+        lastSearch: product.lastSearch,
       });
     });
   } catch (error) {
+    console.log(error);
     return response
       .status(500)
       .json({ message: "Erro ao atualizar o produto" });

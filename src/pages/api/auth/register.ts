@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 import { z } from "zod";
+import { error } from "console";
 
 const RequestPostBodySchema = z.object({
   name: z.string(),
@@ -53,6 +54,7 @@ export default async function handler(
 
     return response.status(201).json(consumerWithoutPassword);
   } catch (error) {
+    console.log(error);
     return response.status(500).json({ message: "Erro ao criar conta" });
   }
 }

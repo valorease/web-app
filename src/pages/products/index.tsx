@@ -51,7 +51,7 @@ export const getServerSideProps = async (context: any) => {
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)) as Product[],
-      plan: await plan.byConsumer(session!.consumer.publicId),
+      plan: (await plan.byConsumer(session!.consumer.publicId)) ?? null,
     },
   };
 };
@@ -153,7 +153,7 @@ export default function Page({
   products,
   plan,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const blockAdd = products.length >= plan.productQuantityLimit;
+  const blockAdd = products.length >= (plan?.productQuantityLimit ?? 0);
 
   return (
     <RootLayout breadcrumb={["Produtos"]} className="flex flex-col gap-4">
@@ -166,7 +166,7 @@ export default function Page({
         </Link>
 
         <p>
-          {products.length} / {plan.productQuantityLimit}
+          {products.length} / {plan?.productQuantityLimit ?? 0}
         </p>
       </div>
 

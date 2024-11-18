@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Plan } from "@prisma/client";
 
 export default {
-  byConsumer: async (consumerPublicId: string): Promise<Plan> => {
+  byConsumer: async (consumerPublicId: string): Promise<Plan | undefined> => {
     const data = await prisma.consumer.findFirst({
       where: {
         publicId: consumerPublicId,
@@ -12,6 +12,6 @@ export default {
       },
     });
 
-    return data!.plan;
+    return data?.plan;
   },
 };
