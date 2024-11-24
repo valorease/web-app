@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import '@/styles/chart.css'
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { AppProps } from "next/app";
