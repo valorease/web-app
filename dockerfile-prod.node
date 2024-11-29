@@ -19,4 +19,11 @@ RUN npx prisma migrate deploy
 
 RUN npx tsx prisma/seed.ts
 
-CMD "npx prisma generate && npm run build && next start -p 80"
+RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+  echo 'npx prisma generate' >> /docker-entrypoint.sh && \
+  echo 'npm run build' >> /docker-entrypoint.sh && \
+  echo 'npm run start' >> /docker-entrypoint.sh
+
+RUN chmod +x /docker-entrypoint.sh
+
+CMD ["/bin/sh", "/docker-entrypoint.sh"]
