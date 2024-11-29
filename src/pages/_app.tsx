@@ -1,5 +1,5 @@
+import "@/styles/chart.css";
 import "@/styles/globals.css";
-import '@/styles/chart.css'
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { AppProps } from "next/app";
@@ -10,7 +10,6 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <title>Valorease App</title>
-
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 

@@ -8,7 +8,11 @@ export default function Document() {
           name="description"
           content="Valorease. Saiba o melhor preço para seu produto. No hoje, no amanhã."
         />
-        <link rel="shortcut icon" href="favicon.svg" type="image/x-icon" />
+        <link
+          rel="shortcut icon"
+          href="https://valorease.site/assets/images/favicon.svg"
+          type="image/x-icon"
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
