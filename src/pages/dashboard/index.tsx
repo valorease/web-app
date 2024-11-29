@@ -97,11 +97,11 @@ const Dashboard = ({ metrics }: { metrics: ProductMetric[] }) => {
           <p>Nenhuma métrica disponível.</p>
         </div>
       ) : (
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 justify-start" >
           {chave === 1 ?
             (
               metrics.map((metric) => (
-                <Card key={metric.name} className="flex-1 max-w-96 flex flex-col justify-between" style={{width:'600px'}}>
+                <Card key={metric.name} className="flex-1 max-w-96 flex flex-col justify-between" style={{minWidth:'350px', maxWidth:'350px'}}>
                   <CardHeader>
                     <CardTitle>{metric.name}</CardTitle>
                   </CardHeader>
