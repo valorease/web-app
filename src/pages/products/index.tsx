@@ -108,9 +108,9 @@ const Products = ({ products }: { products: Product[] }) => {
           </CardContent>
 
           <CardFooter className="gap-2">
-            <Button variant="secondary" className="w-full" asChild>
+            {/* <Button variant="secondary" className="w-full" asChild>
               <Link href={`/products/${product.publicId}`}>Detalhes</Link>
-            </Button>
+            </Button> */}
 
             <Dialog>
               <DialogTrigger asChild>
