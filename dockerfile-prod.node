@@ -23,7 +23,7 @@ RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
   echo 'npx prisma generate' >> /docker-entrypoint.sh && \
   echo 'npx prisma migrate deploy' >> /docker-entrypoint.sh && \
   echo 'npm run build' >> /docker-entrypoint.sh && \
-  echo 'npx next start --port 80' >> /docker-entrypoint.sh
+  echo 'npx next start -p 80' >> /docker-entrypoint.sh
 
 RUN chmod +x /docker-entrypoint.sh
 
